@@ -52,8 +52,12 @@ class Config:
     ADMIN_EMAIL = os.getenv("ADMIN_EMAIL")
 
     # celery
-    CELERY_BROKER_URL = 'redis://localhost:6379/0'
-    CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+    # CELERY_BROKER_URL = 'redis://localhost:6379/0'
+    # CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+    CELERY = {
+        "broker_url": "redis://localhost:6379",
+        "result_backend": "redis://localhost:6379",
+    }
 
     @property
     def SQLALCHEMY_DATABASE_URI(self):  # noqa

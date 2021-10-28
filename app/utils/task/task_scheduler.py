@@ -1,21 +1,26 @@
-from celery import shared_task
+# from celery import shared_task
 # from sendgrid import sendgrid, Mail
 # from app.core.exceptions import AppException
-from flask_mail import Message
-# from app.extensions import mail
+# from flask_mail import Message
+from app.extensions import celery
 
-from app import mail # causing circular imports
+# from app import mail # causing circular imports
 
 
-@shared_task
-def send_email():
-    msg = Message(
-        subject='Testing Emali Configuration',
-        sender='flask_app@test.com',
-        recipients=['paul@mailtrap.io'],
-        body="This is the body of the email"
-    )
-    mail.send(msg)
+@celery.task
+def sum(x, y):
+    return x + y
+
+
+# @shared_task
+# def send_email():
+#     msg = Message(
+#         subject='Testing Emali Configuration',
+#         sender='flask_app@test.com',
+#         recipients=['paul@mailtrap.io'],
+#         body="This is the body of the email"
+#     )
+#     mail.send(msg)
 
 
 

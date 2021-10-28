@@ -5,7 +5,7 @@ from loguru import logger
 from flask import Flask, jsonify
 from flask_mongoengine import MongoEngine
 from sqlalchemy.exc import DBAPIError
-from app.extensions import db, migrate, ma, mail, ext_celery
+from app.extensions import db, migrate, ma, mail, celery
 
 from flask_swagger_ui import get_swaggerui_blueprint
 from werkzeug.exceptions import HTTPException
@@ -17,8 +17,6 @@ from app.core.exceptions.app_exceptions import (
     app_exception_handler,
     AppExceptionCase,
 )
-from celery import Celery
-
 
 APP_ROOT = os.path.join(os.path.dirname(__file__), "..")  # refers to application_top
 dotenv_path = os.path.join(APP_ROOT, ".env")
@@ -30,10 +28,6 @@ API_URL = "/static/swagger.json"
 SWAGGERUI_BLUEPRINT = get_swaggerui_blueprint(
     SWAGGER_URL, API_URL, config={"app_name": "Python-Flask-REST-Boilerplate"}
 )
-
-
-celery = Celery(__name__)
-celery.config_from_object('celeryconfig')
 
 
 class InterceptHandler(logging.Handler):
@@ -76,7 +70,6 @@ def register_extensions(flask_app):
     factory.init_app(flask_app, db)
     ma.init_app(flask_app)
     mail.init_app(flask_app)
-    ext_celery.init_app(flask_app)
 
     @flask_app.errorhandler(HTTPException)
     def handle_http_exception(e):
@@ -119,8 +112,14 @@ def register_swagger_definitions(app):
         return jsonify(spec.to_dict())
 
 
-# from app.extensions import ext_celery
-# celery = ext_celery.celery
-# print(celery)
-# celery instance
-celery = ext_celery.celery
+def init_celery(app=None):
+    app = app or create_app()
+    celery.conf.update(app.config.get("CELERY", {}))
+
+    class ContextTask(celery.Task):
+        """Make celery tasks work with Flask app context"""
+        def __call__(self, *args, **kwargs):
+            with app.app_context():
+                return self.run(*args, **kwargs)
+    celery.Task = ContextTask
+    return celery
