@@ -1,0 +1,39 @@
+version: '3.8'
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      DB_USER: ${DB_USER}
+      DB_SERVER: ${DB_SERVER}
+      DEV_DB_SERVER: ${DEV_DB_SERVER}
+      TEST_DB_SERVER: ${TEST_DB_SERVER}
+      DB_NAME: ${DB_NAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      FLASK_ENV: ${FLASK_ENV}
+      DEBUG: ${DEBUG}
+      REDIS_SERVER: ${REDIS_SERVER}
+    command: 'flask run --host=0.0.0.0 --port=5000'
+    ports:
+      - 8000:5000
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+  db:
+    image: postgres:12
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - $PWD/.dbdata:/var/lib/postgres
+    ports:
+      - 5430:5432
+  redis:
+      image: 'redis:4-alpine'
+      command: redis-server
+      ports:
+          - '6379:6379'
