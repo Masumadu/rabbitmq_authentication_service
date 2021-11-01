@@ -1,5 +1,4 @@
 import abc
-# from dataclasses import dataclass
 
 
 class NotificationHandler(metaclass=abc.ABCMeta):
@@ -10,9 +9,3 @@ class NotificationHandler(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def send(self):
         raise NotImplementedError
-#
-# @dataclass
-# class MyNotificationHandler(abc.ABC):
-#     @abc.abstractmethod
-#     def send(self):
-#         raise NotImplementedError

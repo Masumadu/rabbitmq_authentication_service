@@ -3,6 +3,7 @@ from app import db
 from config import Config
 # builtin imports
 from dataclasses import dataclass
+from jwt import InvalidTokenError
 import jwt
 
 # third party imports
@@ -26,7 +27,8 @@ class CustomerModel(db.Model):
     username = db.Column('username', db.String, nullable=False, unique=True)
     email = db.Column('Email', db.String, nullable=False, unique=True)
     hash_password = db.Column('Password', db.String, nullable=False)
-    verification_status = db.Column("Account Verification", db.Boolean, nullable=False, default=False)
+    verification_status = db.Column("Account Verification", db.Boolean,
+                                    nullable=False, default=False)
 
     @property
     def password(self):
@@ -39,12 +41,17 @@ class CustomerModel(db.Model):
     def verify_password(self, password):
         return check_password_hash(self.hash_password, password)
 
+    def get_customer_token(self):
+        return jwt.encode(
+            {'acct_id': self.id},
+            Config.SECRET_KEY, algorithm=Config.JWT_ALGORITHM)
+
     @staticmethod
     def verify_account_verification_token(token):
         try:
             id = jwt.decode(token, Config.SECRET_KEY,
-                            algorithms=['HS256'])['reset_password']
-        except:
+                            algorithms=Config.JWT_ALGORITHM).get("acct_id")
+        except InvalidTokenError:
             return
         return id
 

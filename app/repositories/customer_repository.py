@@ -25,11 +25,15 @@ class CustomerRepository(SQLBaseRepository):
 
     def create(self, obj_in):
         postgres_create_customer = super().create(obj_in)
-        serialize_all_customers_info = customer_schema.dumps(super().index(), many=True)
-        serialize_customer_info = customer_schema.dumps(postgres_create_customer)
+        serialize_all_customers_info = customer_schema.dumps(super().index(),
+                                                             many=True)
+        serialize_customer_info = customer_schema.dumps(
+            postgres_create_customer)
         try:
-            self.redis_service.set(f"customer__{postgres_create_customer.id}", serialize_customer_info)
-            self.redis_service.set("all_customers", serialize_all_customers_info)
+            self.redis_service.set(f"customer__{postgres_create_customer.id}",
+                                   serialize_customer_info)
+            self.redis_service.set("all_customers",
+                                   serialize_all_customers_info)
         except HTTPException:
             return postgres_create_customer
         else:

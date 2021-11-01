@@ -11,14 +11,15 @@ from app.controllers import CustomerController
 
 # third party imports
 import pinject
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request
 
 customer = Blueprint("customer", __name__)
 
 
-obj_graph_customer = pinject.new_object_graph(modules=None,
-                                           classes=[CustomerController,
-                                                    CustomerRepository, RedisService])
+obj_graph_customer = pinject.new_object_graph(
+    modules=None,
+    classes=[CustomerController, CustomerRepository, RedisService]
+)
 customer_controller = obj_graph_customer.provide(CustomerController)
 
 
@@ -34,12 +35,11 @@ def create_customer():
     return handle_result(customer_data, schema=CreateCustomerSchema)
 
 
-@customer.route("/verify_acct/<token>", methods=["POST"])
-def customer_account_verification():
-    return "verification successful"
+@customer.route("/verify_acct/<token>", methods=["GET"])
+def account_verification(token):
+    return customer_controller.verify_account(token)
 
 
 @customer.route("/signin", methods=["POST"])
 def signin_admin():
-    token = customer_controller.sign_in(request.json)
-    return token
+    return customer_controller.sign_in(request.json)
