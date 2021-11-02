@@ -20,12 +20,18 @@ class AuthService:
             })
         user = model.query.filter_by(
             username=auth_info.get("username")).first()
-        if user and user.verify_password(auth_info.get("password")) and user.verification_status:
-            user_token = self.create_token(user.id)
-            return jsonify({
-                "access_token": user_token[0],
-                "refresh_token": user_token[1]
-            })
+        if user:
+            if not user.verification_status:
+                return jsonify({
+                    "status": "error",
+                    "error": "account unverified"
+                })
+            if user.verify_password(auth_info.get("password")):
+                user_token = self.create_token(user.id)
+                return jsonify({
+                    "access_token": user_token[0],
+                    "refresh_token": user_token[1]
+                })
         return jsonify({
             "status": "error",
             "error": "user verification failure. invalid credentials"

@@ -1,16 +1,14 @@
-import json
 from app.core.result import Result
 from app.core.service_result import ServiceResult
 from app.repositories import CustomerRepository
 from app.core.notifications.notifier import Notifier
 from app.services import NotificationService
 from app.models import CustomerModel
-from app.schema import ReadCustomerSchema
-from flask import url_for, jsonify
 from app.services import AuthService
+from app.utils.message_queue_body import sms_queue_body, mail_queue_body
 
 
-customer_serializer = ReadCustomerSchema()
+# customer_serializer = ReadCustomerSchema()
 auth_service = AuthService()
 notification_handler = Notifier()
 notification_service = NotificationService(["email", "sms"])
@@ -27,12 +25,8 @@ class CustomerController:
     def create(self, data):
         customer = self.customer_repository.create(data)
         if customer:
-            customer_info = json.loads(customer_serializer.dumps(customer))
-            token = customer.get_customer_token()
-            customer_info["url"] = url_for("customer.account_verification",
-                                           token=token, _external=True)
-            notification_service.email_info = customer_info
-            notification_service.sms_info = {"phone": "024040404"}
+            notification_service.email_info = mail_queue_body(customer)
+            notification_service.sms_info = sms_queue_body(customer)
             notification_handler.notify(notification_service)
         return ServiceResult(Result(customer, 201))
 
@@ -40,8 +34,14 @@ class CustomerController:
         account_id = CustomerModel.verify_account_verification_token(token)
         if account_id:
             self.update({"id": account_id}, {"verification_status": True})
-            return jsonify("account verification successful")
-        return jsonify("account verification unsuccessful")
+            return {
+                "status": "success",
+                "msg": "account verification successful"
+            }
+        return {
+            "status": "error",
+            "msg": "account verification unsuccessful"
+        }
 
     def update(self, query_info, obj_in):
         customer = self.customer_repository.update(query_info, obj_in)

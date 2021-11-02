@@ -1,5 +1,5 @@
 from app.core.notifications import NotificationHandler
-from app.producer import create_email_queue, create_sms_queue
+from app.producer import PikaClient
 
 
 class NotificationService(NotificationHandler):
@@ -8,12 +8,12 @@ class NotificationService(NotificationHandler):
 
     def __init__(self, notification_channels: list):
         self.notification_channels = notification_channels
+        self.pika_client = PikaClient(url="localhost", queue="notification")
 
     def send(self):
         if "sms" in self.notification_channels and "email" in self.notification_channels:
-            create_email_queue(self.email_info)
-            create_sms_queue(self.sms_info)
+            self.pika_client.publish_message([self.email_info, self.sms_info])
         elif "sms" in self.notification_channels:
-            create_sms_queue(self.sms_info)
+            self.pika_client.publish_message([self.sms_info])
         elif "email" in self.notification_channels:
-            create_email_queue(self.email_info)
+            self.pika_client.publish_message([self.email_info])

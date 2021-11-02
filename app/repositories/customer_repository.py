@@ -17,11 +17,12 @@ class CustomerRepository(SQLBaseRepository):
 
     def index(self):
         try:
-            redis_all_customers = self.redis_service.get("all_admins")
+            redis_all_customers = self.redis_service.get("all_customers")
+            if redis_all_customers:
+                return redis_all_customers
+            return super().index()
         except HTTPException:
             return super().index()
-        else:
-            return redis_all_customers
 
     def create(self, obj_in):
         postgres_create_customer = super().create(obj_in)

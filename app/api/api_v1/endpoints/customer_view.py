@@ -41,5 +41,5 @@ def account_verification(token):
 
 
 @customer.route("/signin", methods=["POST"])
-def signin_admin():
+def sign_in_admin():
     return customer_controller.sign_in(request.json)

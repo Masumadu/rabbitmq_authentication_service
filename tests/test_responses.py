@@ -1,44 +1,32 @@
-from datetime import date, time
 
 
 class SharedResponse:
-    def signin_invalid_credentials(self):
+    def signin_unverified_account(self):
         return {
-            "error": "user verification failure. invalid credentials",
-            "status": "error"
-        }
+                "status": "error",
+                "error": "account unverified"
+            }
 
-    def signin_valid_credentials(self):
+    def signin_valid_details(self):
         return {
             "access_token": "",
             "refresh_token": ""
         }
 
-    def missing_token_authentication(self):
+    def signin_invalid_details(self):
         return {
-            "message": "Token is missing !!"
+            "status": "error",
+            "error": "user verification failure. invalid credentials"
         }
 
-    def resource_unavailable(self):
+    def account_verification_valid_token(self):
         return {
-            "app_exception": "NotFoundException",
-            "errorMessage": "Resource does not exist"
-        }
+                "status": "success",
+                "msg": "account verification successful"
+            }
 
-    def unauthorize_operation(self):
+    def account_verification_invalid_token(self):
         return {
-            "error": "unauthorized user",
-            "status": "error"
-        }
-
-    def refresh_token_required(self):
-        return {
-            "error": "refresh token required",
-            "status": "error"
-        }
-
-    def access_token_required(self):
-        return {
-            "error": "access token required",
-            "status": "error"
+            "status": "error",
+            "msg": "account verification unsuccessful"
         }

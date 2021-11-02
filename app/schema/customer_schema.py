@@ -15,7 +15,6 @@ class CustomerSchema(Schema):
 class CreateCustomerSchema(CustomerSchema):
     class Meta:
         fields = ["id", "name", "username", "email", "password"]
-        exclude = ["id"]
         load_only = ["password"]
 
 

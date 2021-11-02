@@ -1,0 +1,3 @@
+from .test_customer_repository import TestCustomerRepository
+from .test_customer_controller import TestCustomerController
+from .test_customer_views import TestCustomerViews
