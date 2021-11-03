@@ -4,16 +4,17 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    image: flask_authentication_service
     environment:
       DB_USER: ${DB_USER}
       DB_SERVER: ${DB_SERVER}
-      DEV_DB_SERVER: ${DEV_DB_SERVER}
+      DEV_DB_SERVER: ${DEV_DB_SERVER_DOCKER}
       TEST_DB_SERVER: ${TEST_DB_SERVER}
       DB_NAME: ${DB_NAME}
       DB_PASSWORD: ${DB_PASSWORD}
       FLASK_ENV: ${FLASK_ENV}
       DEBUG: ${DEBUG}
-      REDIS_SERVER: ${REDIS_SERVER}
+      REDIS_SERVER: ${REDIS_SERVER_DOCKER}
     command: 'flask run --host=0.0.0.0 --port=5000'
     ports:
       - 8000:5000

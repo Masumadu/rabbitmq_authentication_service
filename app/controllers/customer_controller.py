@@ -8,10 +8,9 @@ from app.services import AuthService
 from app.utils.message_queue_body import sms_queue_body, mail_queue_body
 
 
-# customer_serializer = ReadCustomerSchema()
 auth_service = AuthService()
 notification_handler = Notifier()
-notification_service = NotificationService(["email", "sms"])
+notification_service = NotificationService(["email"])
 
 
 class CustomerController:
@@ -26,7 +25,7 @@ class CustomerController:
         customer = self.customer_repository.create(data)
         if customer:
             notification_service.email_info = mail_queue_body(customer)
-            notification_service.sms_info = sms_queue_body(customer)
+            # notification_service.sms_info = sms_queue_body(customer)
             notification_handler.notify(notification_service)
         return ServiceResult(Result(customer, 201))
 

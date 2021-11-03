@@ -7,4 +7,3 @@ db = SQLAlchemy()
 migrate = Migrate()
 ma = Marshmallow()
 db.__setattr__("GUID", GUID)
-
