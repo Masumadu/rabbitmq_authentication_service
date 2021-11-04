@@ -1,3 +1,5 @@
+import os
+
 from app.core.notifications import NotificationHandler
 from app.producer import PikaClient
 
@@ -8,7 +10,7 @@ class NotificationService(NotificationHandler):
 
     def __init__(self, notification_channels: list):
         self.notification_channels = notification_channels
-        self.pika_client = PikaClient(url="localhost", queue="notification")
+        self.pika_client = PikaClient(url=os.getenv("RABBITMQ_URL"), queue="notification")
 
     def send(self):
         if "sms" in self.notification_channels and "email" in self.notification_channels:
