@@ -53,12 +53,13 @@ class Config:
 
     JWT_ALGORITHM="HS256"
 
-    # celery
-    # CELERY_BROKER_URL = 'redis://localhost:6379/0'
-    # CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+    RABBITMQ_CLOUDAMQP_URL = os.getenv("RABBITMQ_URL")
+
+    RABBITMQ_SERVER = os.getenv('RABBITMQ_SERVER')
+
     CELERY = {
-        "broker_url": "redis://localhost:6379",
-        "result_backend": "redis://localhost:6379",
+        "broker_url": f"amqp://guest:guest@{os.getenv('RABBITMQ_SERVER')}:5672//",
+        # "broker_url": f"redis://{os.getenv('REDIS_SERVER')}:6379/0",
     }
 
     @property
